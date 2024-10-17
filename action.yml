@@ -8,13 +8,15 @@ inputs:
 runs:
   using: composite
   steps:
-  - run: python -m pip install --break-system-packages pre-commit
-    shell: bash
-  - run: python -m pip freeze --local
+  - run: |
+      python -m venv --upgrade-deps env
+      . env/bin/activate
+      pip install pre-commit
+      pip freeze --local
     shell: bash
   - uses: actions/cache@v4
     with:
       path: ~/.cache/pre-commit
       key: pre-commit-3|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
-  - run: pre-commit run --show-diff-on-failure --color=always ${{ inputs.extra_args }}
+  - run: env/bin/pre-commit run --show-diff-on-failure --color=always ${{ inputs.extra_args }}
     shell: bash
